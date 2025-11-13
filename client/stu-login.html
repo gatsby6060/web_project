@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>첫번째 페이지</title>
+</head>
+<style>
+    table,
+    tr,
+    td,
+    th {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: center;
+    }
+</style>
+<!-- // 1. 이름, 학번을 입력하고 로그인 클릭 시 둘다 만족하는 정보가 db에 있으면 -->
+<!-- //    '로그인 성공!' 알림 후 'student-list.html'로 이동 -->
+<!-- // 2. 없는 이름으로 로그인을 시도 하면 '해당 이름을 가진 학생이 없습니다.' 알림 출력 -->
+<!-- // 3. 이름은 있지만 학번이 다를 경우 '학번을 확인해주세요' 알림 출력 -->
+
+<body>
+    <div id="app">
+        <div>
+            <div>학번 : <input v-model="info.stuNo"></div>
+            <div>이름 : <input v-model="info.stuName"></div>
+            <button @click="fnLogin">로그인</button>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // list : []
+                info: {
+                    stuNo: "",
+                    stuName: "",
+                }
+            };
+        },
+        methods: {
+            fnLogin() {
+                let self = this;
+                fetch("http://localhost:3000/student/login/"+ self.info.stuNo+"/"+self.info.stuName)
+                    .then(res => res.json())
+                    .then(data => {
+                        self.info = data.info;
+                        console.log("여긴 클라이언트" + JSON.stringify(self.info));
+                        alert("로그인 성공");
+                        location.href = "student-list.html";
+                    })
+            }
+        },
+        mounted() {
+            var self = this;
+        }
+    });
+    app.mount('#app');
+</script>
