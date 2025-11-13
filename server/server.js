@@ -67,17 +67,17 @@ app.delete('/student/:stuNo', async (rq, res) => {
 })
 
 app.post('/student', async (req, res) => {
-   
-    let {stuNo, stuName, stuDept} = req.body
+
+    let { stuNo, stuName, stuDept } = req.body
     console.log(req.body);
     console.log(stuNo, stuName, stuDept);
     try {
         let sql = "INSERT INTO STUDENT (STU_NO, STU_NAME, STU_DEPT) VALUES(?,?,?)";
-        let result = await db.query(sql, [stuNo,stuName,stuDept]);
-       
+        let result = await db.query(sql, [stuNo, stuName, stuDept]);
+
         res.json({
-            msg : "success",
-            result: result,
+            msg: "success",
+            result : result,
         });
     } catch (error) {
         console.log("에러발생!");
@@ -86,19 +86,48 @@ app.post('/student', async (req, res) => {
 
 app.get('/student/login/:stuNo/:stuName', async (req, res) => {
     let { stuNo, stuName } = req.params;
-    console.log("여긴서버"+ stuNo);
-    console.log("여긴서버"+ stuName);
+    console.log("여긴서버" + stuNo);
+    console.log("여긴서버" + stuName);
     try {
-        let sql = "SELECT * FROM STUDENT WHERE STU_NO = " + stuNo + " AND STU_NAME = '" + stuName+ "'";
+        let sql = "SELECT * FROM STUDENT WHERE STU_NO = " + stuNo + " AND STU_NAME = '" + stuName + "'";
         console.log(sql);
-        // let result = await db.query(sql);
-        // console.log("학생조회결과result ==> ", result);
         let [list] = await db.query(sql);
         console.log(list);
-        res.json({
-            result: "success",
-            info: list[0],
-        });
+        if (list.length > 0) {
+            console.log("맞는 학번, 이름 있네용");
+            res.json({
+                result: "success",
+                info: list[0],
+            });
+        } else {
+            console.log("맞는 학번, 이름이 없습니다.");
+            let sql = "SELECT * FROM STUDENT WHERE STU_NAME = '" + stuName + "'";
+            let [list] = await db.query(sql);
+            console.log(list);
+            if (list.length <= 0) {
+                console.log("이름이 없네요");
+                res.json({
+                    result: "noName",
+                });
+
+            } else {
+                console.log("이름은 있네요");
+                res.json({
+                    result: "justStuName",
+                });
+
+            }
+
+            // sql = "SELECT * FROM STUDENT WHERE STU_NO = " + stuNo + "";
+            // let [list2] = await db.query(sql);
+            // console.log(list2);
+            // if (list.length > 0) {
+            //         res.json({
+            //             result: "justStuNo",
+            //         });
+            //     }
+
+        }
     } catch (error) {
         console.log("에러발생!");
     }
