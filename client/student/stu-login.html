@@ -27,8 +27,8 @@
 <body>
     <div id="app">
         <div>
-            <div>학번 : <input v-model="info.stuNo"></div>
-            <div>이름 : <input v-model="info.stuName"></div>
+            <div>학번 : <input v-model="stuNo"></div>
+            <div>이름 : <input v-model="stuName"></div>
             <button @click="fnLogin">로그인</button>
         </div>
     </div>
@@ -40,38 +40,32 @@
         data() {
             return {
                 // list : []
-                info: {
+                
                     stuNo: "",
                     stuName: "",
-                }
+                
             };
         },
         methods: {
             fnLogin() {
                 let self = this;
-                fetch("http://localhost:3000/student/login/" + self.info.stuNo + "/" + self.info.stuName)
+                let param = {
+                    stuNo : self.stuNo,
+                    stuName : self.stuName
+                };
+                fetch("http://localhost:3000/student/login",{
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(param),
+                })
                     .then(res => res.json())
                     .then(data => {
-                        // self.info = data.info;
-                        let result = data.result;
-                        console.log("여긴 클라이언트" + JSON.stringify(self.info));
-                        if (result == "success") {
-                            self.info = data.info;
-                            // let result = data.result;
-                            alert("로그인 성공");
-                            location.href = "student-list.html"
-                        } 
-                        else if (result == "justStuName") {
-                            alert("이름은 있습니다 학번을 확인해주세요");
-                        } 
-                        // else if (result == "justStuNo") {
-                        //     alert("학번은 있습니다 이름을 확인해주세요");
-                        // } 
-                        else if (result == "noName") {
-                            alert("해당 이름을 가진 학생이 없습니다.");
-                        } 
-                        else {
-                            alert("그냥 알 수없는 에러");
+                        console.log(data);
+                        alert(data.msg);
+                        if(data.result == "success"){
+                            location.href = "student-list.html";
                         }
                     })
             }
