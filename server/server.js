@@ -7,7 +7,7 @@ const userRouter = require("./routes/user");
 
 const app = express()
 app.use(cors({
-    origin: ["http://192.168.30.45:5500"], //여기서 들어오는건 안막겠다는 뜻
+    origin: ["http://192.168.30.45:5500","http://192.168.30.45:5501"], //여기서 들어오는건 안막겠다는 뜻
     // origin: "*", //모조리 안막겟다
     credentials: true
 }))
