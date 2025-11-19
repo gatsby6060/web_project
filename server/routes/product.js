@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require("../db"); //.js생략상태
+const authMiddleware = require("../auth");
 
 router.get("/", async(req, res) => {
     try {
@@ -17,7 +18,7 @@ router.get("/", async(req, res) => {
     }
 })
 
-router.delete('/:prodId', async (rq, res) => { //꺼낼때 ID명은 내맘대로 가능함
+router.delete('/:prodId', authMiddleware, async (rq, res) => { //꺼낼때 ID명은 내맘대로 가능함
     console.log("일단 제품 딜리트 서버 진입"); // ajax 든 fetch든 잘 동작함
     let { prodId } = rq.params; //꺼낼떄 이름을 그대로 사용
     console.log("날아온 아이디는" + prodId);

@@ -56,8 +56,8 @@
                         <td>
                             <button v-if="productId == ''" @click="fnEditMode(item)">수정</button>
                         </td>
-                        <td>
-                            <button v-if="productId == ''" @click="fnRemove(item.productId)">삭제</button>
+                        <td><!--&& user.status == 'A' -->
+                            <button v-if="productId == '' " @click="fnRemove(item.productId)">삭제</button>
                         </td>
                     </tr>
                     <tr v-else>
@@ -87,6 +87,7 @@
                 list: [],
                 productId: "",
                 info: {},
+                user : {},
             };
         },
         methods: {
@@ -101,14 +102,18 @@
             },
             fnRemove: function (pdId) {
                 let self = this; //fetch에서 delete방식 적용, 서버의 delete방식 함수호출
-                if (!confirm("삭제할까요?")) {
+                if (!confirm("삭제할거?")) {
                     return;
                 }
                 fetch("http://localhost:3000/product/" + pdId, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers : {
+                        "Authorization" : "Bearer " + localStorage.getItem("token") //token을꺼냄
+                    }
                 })
                     .then(res => res.json())
                     .then(data => {
+                        console.log(data);
                         alert("삭제되었습니다.");
                         self.fnGetList();
                     })
@@ -142,6 +147,29 @@
         mounted() {
             var self = this;
             self.fnGetList();
+
+            let token = localStorage.getItem("token");
+            // console.log(token);
+
+            if (token) {
+                // 디코딩 한글 깨지는 경우 (atob함수가 UTF-8을 지원하지 않아서 발생하는 문제)
+
+                const base64Payload = token.split('.')[1];
+                const base64 = base64Payload.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = atob(base64); // base64 디코딩
+
+                const bytes = Uint8Array.from(payload, c => c.charCodeAt(0));
+                const json = new TextDecoder().decode(bytes);
+                const user = JSON.parse(json);
+
+                self.user = user;
+
+                // console.log("user===>", user);
+            } else {
+                alert("로그인 하셈~");
+                // location.href("../user/login.html");
+                location.href = "../user/login.html"; // ←
+            }
         }
     });
     app.mount('#app');
